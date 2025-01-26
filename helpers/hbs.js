@@ -14,6 +14,9 @@ module.exports = {
         }
         return str
     },
+    stripTags: function(input){
+        return input.replace(/<\/?[^>]+(>|$)/g, "")
+    },
 
 
 }
