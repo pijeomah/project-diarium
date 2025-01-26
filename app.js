@@ -6,6 +6,7 @@ const exphbs = require('express-handlebars')
 const passport = require('passport')
 const path = require('path')
 const session = require('express-session')
+const MongoStore = require('connect-mongo')
  
 // Load Config
 dotenv.config({path:'./config/config.env'})
@@ -16,13 +17,24 @@ require('./config/passport')(passport)
 connectDB()
 
 const app = express()
+
+app.use(express.urlencoded({extended: false}))
+app.use(express.json())
 // Logging 
 if(process.env.NODE_ENV === 'development'){
     app.use(morgan('dev'))
 }
 
+
+// Handlebars helpers
+const { formatDate } = require('./helpers/hbs')
+
+
 // Handlebars
 app.engine('.hbs', exphbs.engine({
+    helpers: {
+        formatDate,
+    },
     defaultLayout: 'main',
     extname: '.hbs',
     layoutsDir: path.join(__dirname, '/views/layouts')
@@ -36,7 +48,10 @@ app.use(
     session({
     secret: 'keyboard cat',
     resave: false,
-    saveUninitialized: true
+    saveUninitialized: true,
+    store: MongoStore.create({
+        mongoUrl: process.env.MONGO_URI
+    })
    })
 )
 
@@ -53,6 +68,7 @@ app.use(express.static(path.join(__dirname, 'public')))
 app.use('/', require('./routes/index'))
 app.use ('/dashboard', require('./routes/index'))
 app.use('/auth', require('./routes/auth'))
+app.use('/entries', require('./routes/entries'))
 
 
 //Listening

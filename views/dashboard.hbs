@@ -1,1 +1,30 @@
 <h1>Dashboard</h1>
+<h3>Welcome {{name}}</h3>
+<p>Here are all your Entries</p>
+{{#if entries}}
+<table class="striped">
+    <thead>
+        <tr>
+            <th>Title</th>
+             <th>Date</th>
+              <th>Status</th>
+               <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        {{#each entries}}
+            <tr>
+                <td><a href="/entries/{{_id}}"></a>{{title}}</td>
+                <td>{{formatDate createdAt 'MMMM Do YYYY, h:mma'}}</td>
+                <td><span class="dash-status">{{status}}</span></td>
+            </tr>
+
+        {{/each}}
+    </tbody>
+</table>
+
+{{else}}
+<p>You have not made any entries</p>
+
+
+{{/if}}
